@@ -36,14 +36,15 @@ public class EventService {
 		EventDao webhook = new EventDao(request, domain, eventTimeStamp);
 		eventRepository.save(webhook);
 		
+		/*
+		 * fetching categories for the domain in separate thread
+		 */
 		new Thread(new Runnable() {
             @Override
             public void run() {
             	categoryService.saveCategories(domain);
             }
         }).start();
-		
-		
 		
 		EventResponse response = new EventResponse();
 		response.setStatus("success");

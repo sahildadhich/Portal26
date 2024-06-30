@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,15 +30,6 @@ public class CategoryService {
 		domain = domain.trim().toLowerCase();
 		
 		/*
-		 * Categories are already saved for domain
-		 * hence nothing to do
-		 */
-		List<CategoryDao> savedCategories = categoryRepository.findByDomain(domain);
-		if(!CollectionUtils.isEmpty(savedCategories)) {
-			return;
-		}
-		
-		/*
 		 * Making API call to third party to fetch the categories list for the given domain. 
 		 */
 		WhoisXmlApi apiResponse = null;
@@ -60,17 +52,40 @@ public class CategoryService {
 		}
 		
 		
-		List<CategoryDao> daoList = new ArrayList<CategoryDao>();
+		/*
+		 * Categories that are already saved for domain
+		 */
+		List<CategoryDao> existingCategories = categoryRepository.findByDomain(domain);
+		
+		List<CategoryDao> newCategories = new ArrayList<CategoryDao>();
 		CategoryDao dao = null;
 		
 		for(Categories category : categories) {
 			dao = new CategoryDao();
 			dao.setDomain(domain);
 			dao.setCategory(category.getName().trim().toLowerCase());
-			daoList.add(dao);
+			newCategories.add(dao);
 		}
 		
-		categoryRepository.saveAll(daoList);
+		/*
+		 * remove already existing categories
+		 */
+		List<String> categoriesToRemove = existingCategories.stream()
+                							.map(CategoryDao::getCategory)
+                							.collect(Collectors.toList());
+		
+		newCategories = newCategories.stream()
+                		.filter(person -> !categoriesToRemove.contains(person.getCategory()))
+                		.collect(Collectors.toList());
+		
+		
+		/*
+		 * Add new categories that are not already present.
+		 */
+		if(!CollectionUtils.isEmpty(newCategories)) {
+			categoryRepository.saveAll(newCategories);
+		}
+		
 		
 	}
 	
@@ -87,4 +102,5 @@ public class CategoryService {
 		}
 		return domainMap;
 	}
+	
 }
