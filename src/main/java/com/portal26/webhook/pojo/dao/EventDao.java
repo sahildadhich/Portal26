@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity    
@@ -25,7 +26,6 @@ public class EventDao implements Serializable {
 	private String url;
 	private String domain;
 	private String body;
-	private String category;
 	private Timestamp timestamp;
 	
 	public EventDao() {
@@ -34,13 +34,11 @@ public class EventDao implements Serializable {
 	
 	public EventDao(EventRequest request, String domain, Timestamp eventTimestamp) {
 		super();
-		this.tenant = request.getTenant();
-		this.userid = request.getUser_id();
+		this.tenant = request.getTenant().trim().toLowerCase();
+		this.userid = request.getUser_id().trim().toLowerCase();
 		this.url = request.getUrl();
 		this.domain = domain;
 		this.body = request.getBody();
-		this.category = "category";
-		
 		this.timestamp = eventTimestamp;
 	}
 
@@ -123,20 +121,6 @@ public class EventDao implements Serializable {
 	}
 
 	/**
-	 * @return the category
-	 */
-	public String getCategory() {
-		return category;
-	}
-
-	/**
-	 * @param category the category to set
-	 */
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	/**
 	 * @return the timestamp
 	 */
 	public Timestamp getTimestamp() {
@@ -155,7 +139,6 @@ public class EventDao implements Serializable {
 		return "EventDao [" + (tenant != null ? "tenant=" + tenant + ", " : "")
 				+ (userid != null ? "userid=" + userid + ", " : "") + (url != null ? "url=" + url + ", " : "")
 				+ (domain != null ? "domain=" + domain + ", " : "") + (body != null ? "body=" + body + ", " : "")
-				+ (category != null ? "category=" + category + ", " : "")
 				+ (timestamp != null ? "timestamp=" + timestamp : "") + "]";
 	}
 

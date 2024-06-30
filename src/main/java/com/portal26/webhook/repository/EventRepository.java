@@ -18,7 +18,7 @@ public interface EventRepository extends JpaRepository<EventDao, Integer>{
 	
 	List<EventDao> findByTenantAndTimestampBetweenAndUserid(String tenant, Timestamp fromdate, Timestamp toDate, String userId);
 	
-	List<EventDao> findByTenantAndTimestampBetweenAndDomainAndUserId(String tenant, Timestamp fromdate, Timestamp toDate, String domain, String userId);
+	List<EventDao> findByTenantAndTimestampBetweenAndDomainAndUserid(String tenant, Timestamp fromdate, Timestamp toDate, String domain, String userId);
 	
 	
 }
