@@ -21,7 +21,10 @@ public class EventDao implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private int id;
+	
+	//@Column(name="tenant")
 	private String tenant;
+	
 	private String userid;
 	private String url;
 	private String domain;

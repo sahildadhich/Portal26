@@ -36,7 +36,14 @@ public class EventService {
 		EventDao webhook = new EventDao(request, domain, eventTimeStamp);
 		eventRepository.save(webhook);
 		
-		categoryService.saveCategories(domain);
+		new Thread(new Runnable() {
+            @Override
+            public void run() {
+            	categoryService.saveCategories(domain);
+            }
+        }).start();
+		
+		
 		
 		EventResponse response = new EventResponse();
 		response.setStatus("success");
@@ -67,16 +74,7 @@ public class EventService {
 		
 		List<EventDao> eventList = null;
 		
-		
-		if(Objects.nonNull(userId) && Objects.nonNull(domain)) {
-			eventList = eventRepository.findByTenantAndTimestampBetweenAndDomainAndUserid(tenant, fromDateTime, toDateTime, domain, userId);
-		}else if(Objects.nonNull(userId)) {
-			eventList = eventRepository.findByTenantAndTimestampBetweenAndUserid(tenant, fromDateTime, toDateTime, userId);
-		}else if(Objects.nonNull(domain)) {
-			eventList = eventRepository.findByTenantAndTimestampBetweenAndDomain(tenant, fromDateTime, toDateTime, domain);
-		}else {
-			eventList = eventRepository.findByTenantAndTimestampBetween(tenant, fromDateTime, toDateTime);
-		}
+		eventList = eventRepository.findEventDaos(tenant, domain, userId, fromDateTime, toDateTime);
 		
 		if(CollectionUtils.isEmpty(eventList)) {
 			return null;

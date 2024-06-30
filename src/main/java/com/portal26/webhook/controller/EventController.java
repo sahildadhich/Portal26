@@ -33,8 +33,8 @@ public class EventController {
 	public List<EventResponse> getEvent(@PathVariable String tenant, @RequestBody EventQueryRequest request) {
 		
 		request.setTenant(tenant);
-		
-		return service.getEvents(request);
+		List<EventResponse> responseList = service.getEvents(request);
+		return responseList;
 	}
 
 }
